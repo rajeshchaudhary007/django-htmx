@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo</title>
+  <style>
+    .htmx-swapping{
+        opacity: 0;
+        transition: opacity 1s ease-out;
+    }
+   
+  </style>
+</head>
+
+
+
+
+<body class="bg-blue-500">
+
+    <nav class="flex items-center justify-center px-4 py-6 text-center bg-gradient-to-r from-indigo-600 to-blue-500">
+        <a href="/" class="text-2xl text-white">Todo App </a>
+    </nav>
+
+    <div class="w-4/5 my-6 mx-auto p-2 lg:p-10 bg-white rounded-lg">
+        <form 
+        class="flex mb-4 space-x-4"
+        hx-post="/add-todo/"
+        hx-target="#todos"
+        hx-swap="afterend"
+        >
+            <input type="text" name="title" class="title flex-1 px-4 py-3 bg-gray-200 rounded-lg" placeholder="The title">
+            <button class="p-3 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+                  </svg>
+                  
+            </button>
+        </form>
+
+        <div class="flex py-3 rounded-lg bg-gray-100">
+            <div class="w-4/5">
+                <p class="px-6 text-xs font-medium text-gray-500 uppercase">Title</p>
+            </div>
+            <div class="hidden md:block w-1/5 px-6 text-right">
+                <p class="text-xs font-medium text-gray-500 upercase">Actions</p>
+            </div>
+        </div>
+
+        <div class="divide-y divide-gray-200" id="todos">
+           {% for todo in todos %}
+            {% include 'todo/partials/todo.html' %}
+           {% endfor %}
+        </div>
+    </div>
+</body>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/htmx.org@1.9.4"></script>
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+
+    document.body.addEventListener('htmx:afterRequest', (event) => {
+        document.querySelector("input.title").value = '';
+    });
+</script>
+
+</html>
